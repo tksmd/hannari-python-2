@@ -1,0 +1,8 @@
+*.pyc
+*.log
+venv
+idea
+.idea
+.ipynb_checkpoints
+output/*.png
+output/*.npy
