@@ -32,29 +32,29 @@ class LowrankReconstruction:
         self.missing_value = missing_value
         np.random.seed(random_state)
 
-    def transform(self, X: np.ndarray) -> np.ndarray:
-        refill = self.get_refill(X)
+    def transform(self, A: np.ndarray) -> np.ndarray:
+        refill = self.get_refill(A)
 
         # initial guess
-        X_trans = np.random.rand(*X.shape)
+        X = np.random.rand(*A.shape)
         # retrieve existing values
-        refill(X_trans)
+        refill(X)
 
         for t in range(self.max_iter):
             # update threshold in each iteration
             thresh = self.alpha * (1 - t / self.max_iter)
             # apply SVD
-            U, S, V = np.linalg.svd(X_trans, full_matrices=False)
+            U, S, V = np.linalg.svd(X, full_matrices=False)
             # apply soft thresholding function to singular values
             S = soft_thresh(S, thresh)
             S = np.diag(S)
             # reconstruct X
-            X_trans = U.dot(S).dot(V)
-            refill(X_trans)
+            X = U.dot(S).dot(V)
+            refill(X)
 
-        return X_trans
+        return X
 
-    def get_refill(self, src) -> Callable[[np.ndarray], None]:
+    def get_refill(self, src: np.ndarray) -> Callable[[np.ndarray], None]:
         # keep position of existing values
         pos = np.where(src != self.missing_value)
 
